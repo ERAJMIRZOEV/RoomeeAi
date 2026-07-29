@@ -1,11 +1,19 @@
 import { properties } from "@/data/properties";
 import { PropertyCard } from "@/components/PropertyCard";
+import { Newsletter } from "@/components/Newsletter";
+import { Testimonials } from "@/components/Testimonials";
+import { Hero } from "@/components/Hero";
+import { Stats } from "@/components/Stats";
+import { Container } from "@/components/ui/Container";
+import { Categories } from "@/components/Categories";
 
 export default function HomePage() {
   return (
     <>
-    <main className="container mx-auto px-4 py-8">
-      <h1 className="ml-20 mb-6 text-3xl font-bold tracking-tight">
+    
+      <Hero/>
+      <Stats/>
+      <h1 className="p-20 pb-10 pl-0 ml-20 mb-6 text-3xl font-bold tracking-tight">
         Каталог недвижимости
       </h1>
 
@@ -15,7 +23,10 @@ export default function HomePage() {
   <PropertyCard key={property.id} property={property} index={index} />
 ))}
       </div>
-    </main>
+      <Categories/>
+      <Testimonials/>
+    <Newsletter/>
+    
     </>
   );
 }

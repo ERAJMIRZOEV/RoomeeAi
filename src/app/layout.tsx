@@ -1,17 +1,15 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Lato } from "next/font/google"; // 1. Импортируем Lato вместо Geist
+
 import "./globals.css";
-import { Header } from "@/components/Header"; // Добавили и Header
-import { SubFooter } from "@/components/SubFooter";
+import { Header } from "@/components/Header";
+import { Footer } from "@/components/Footer";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+// 2. Настраиваем Lato с нужными весами и поддержкой латиницы + кириллицы
+const lato = Lato({
+  variable: "--font-lato",
   subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
+  weight: ["100", "300", "400", "700", "900"],
 });
 
 export const metadata: Metadata = {
@@ -27,18 +25,18 @@ export default function RootLayout({
   return (
     <html
       lang="ru"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${lato.variable} ${lato.className} h-full antialiased`}
     >
       <body className="flex min-h-full flex-col bg-background">
         {/* Шапка сайта */}
         <Header />
 
-        {/* Основное содержимое страницы, растягивается за счет flex-1 */}
-        <main className="flex-1">{children}</main>
+        {/* Основное содержимое страницы */}
+        <main className="flex-1 w-full">{children}</main>
 
         {/* Нижняя полоса */}
-        <SubFooter />
+        <Footer />
       </body>
     </html>
   );
-}
+} 

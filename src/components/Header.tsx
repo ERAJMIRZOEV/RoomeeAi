@@ -2,10 +2,12 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Search, Building2, Plus, User } from "lucide-react";
+import { Container } from "./ui/Container";
 
 export function Header() {
   return (
     <header className="sticky top-0 z-50 flex h-[81px] w-full items-center border-b bg-[#F6F7F9] px-6 md:px-12">
+      <Container>
       <div className="mx-auto flex w-full max-w-[1440px] items-center justify-between gap-4">
         
         {/* Логотип */}
@@ -36,6 +38,7 @@ export function Header() {
         </div>
 
       </div>
+      </Container>
     </header>
   );
 }
