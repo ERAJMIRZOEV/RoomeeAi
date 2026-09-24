@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { Container } from '@/components/ui/Container'; // Подключаем Container
 import { Stats } from './Stats';
+import { Sparkles } from "lucide-react";
 
 export function Hero() {
   const [query, setQuery] = useState('');
@@ -57,8 +58,7 @@ export function Hero() {
               type="submit"
               className="flex items-center gap-2 rounded-full bg-[#0F172A] px-6 py-3 text-sm font-bold text-white transition hover:bg-slate-800 active:scale-95 shrink-0"
             >
-              <span>⚡</span>
-              <span>Спросить ИИ</span>
+<Sparkles className="h-4 w-4 text-indigo-500" />              <span>Спросить ИИ</span>
             </button>
           </form>
         </div>

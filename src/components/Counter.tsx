@@ -1,46 +1,78 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
-import { useInView, useMotionValue, useSpring } from 'framer-motion';
+import { useEffect, useRef, useState } from 'react';
 
 interface CounterProps {
-  value: number; // Число, до которого нужно досчитать (например, 1200)
-  suffix?: string; // Плюс, процент или текст (например, "+")
-  duration?: number; // Длительность анимации в секундах
+  value: number;
+  suffix?: string;
+  duration?: number;
 }
 
-export function Counter({ value, suffix = '', duration = 2.5 }: CounterProps) {
+export function Counter({ value, suffix = '', duration = 1600 }: CounterProps) {
+  const [count, setCount] = useState(0);
   const ref = useRef<HTMLSpanElement>(null);
-  
-  // Отслеживаем появление блока в видимой зоне экрана
-  const isInView = useInView(ref, { once: true, margin: '-50px' });
-
-  // Motion Value от 0 до целевого значения
-  const count = useMotionValue(0);
-
-  // Плавное замедление (Spring / Ease effect)
-  const springValue = useSpring(count, {
-    damping: 30,  // Сопротивление (чем больше, тем плавнее финиш)
-    stiffness: 80, // Жесткость пружины
-    duration: duration * 1000,
-  });
+  const isStarted = useRef(false);
 
   useEffect(() => {
-    if (isInView) {
-      count.set(value);
+    // Функция запуска плавного счета
+    const runAnimation = () => {
+      if (isStarted.current) return;
+      isStarted.current = true;
+
+      const startTime = performance.now();
+
+      const updateCounter = (currentTime: number) => {
+        const elapsed = currentTime - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+
+        // Плавное торможение в конце (ease-out cubic)
+        const easeOut = 1 - Math.pow(1 - progress, 3);
+        const currentVal = Math.floor(easeOut * value);
+
+        setCount(currentVal);
+
+        if (progress < 1) {
+          requestAnimationFrame(updateCounter);
+        } else {
+          setCount(value);
+        }
+      };
+
+      requestAnimationFrame(updateCounter);
+    };
+
+    // 1. Пытаемся отследить появление стандартным IntersectionObserver
+    let observer: IntersectionObserver | null = null;
+    if (typeof window !== 'undefined' && 'IntersectionObserver' in window && ref.current) {
+      observer = new IntersectionObserver(
+        (entries) => {
+          if (entries[0]?.isIntersecting) {
+            runAnimation();
+            observer?.disconnect();
+          }
+        },
+        { threshold: 0.01 }
+      );
+      observer.observe(ref.current);
     }
-  }, [isInView, count, value]);
 
-  useEffect(() => {
-    // Подписываемся на изменение значения и форматируем вывод
-    const unsubscribe = springValue.on('change', (latest) => {
-      if (ref.current) {
-        ref.current.textContent = `${Math.floor(latest)}${suffix}`;
-      }
-    });
+    // 2. ЖЕСТКИЙ ФОЛЛБЕК ДЛЯ ТЕЛЕФОНОВ:
+    // Если через 400мс обзервер не сработал (баг мобилки при absolute/translate),
+    // счетчик стартует автоматически. На 0+ он больше не зависнет никогда.
+    const fallbackTimer = setTimeout(() => {
+      runAnimation();
+    }, 400);
 
-    return () => unsubscribe();
-  }, [springValue, suffix]);
+    return () => {
+      observer?.disconnect();
+      clearTimeout(fallbackTimer);
+    };
+  }, [value, duration]);
 
-  return <span ref={ref}>0{suffix}</span>;
+  return (
+    <span ref={ref} className="tabular-nums">
+      {count}
+      {suffix}
+    </span>
+  );
 }
