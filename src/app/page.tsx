@@ -1,4 +1,3 @@
-import { properties } from "@/data/properties";
 import { PropertyCard } from "@/components/PropertyCard";
 import { Newsletter } from "@/components/Newsletter";
 import { Testimonials } from "@/components/Testimonials";
